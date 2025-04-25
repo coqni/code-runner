@@ -1,31 +1,28 @@
-sequenceDiagram
-    participant EducationalPlatform
-    participant CodeRunnerAPI
-    participant DaggerContainer1 as DaggerContainer (Submission 1)
-    participant DaggerContainer2 as DaggerContainer (Submission 2)
-    participant MetricsStore
-    participant LogFile
+graph TD
+    subgraph User Interface
+        UI[Coqni UI]
+    end
 
-    %% Submission 1
-    EducationalPlatform->>+CodeRunnerAPI: POST /run (code + inputs)
-    CodeRunnerAPI->>+MetricsStore: increment in_progress, total_executions
-    CodeRunnerAPI->>+DaggerContainer1: run all inputs for Submission 1
-    DaggerContainer1-->>-CodeRunnerAPI: { input: { output, error? }, ... }
-    CodeRunnerAPI->>+MetricsStore: update stats (duration, success/failure)
-    CodeRunnerAPI->>+LogFile: write to /logs/YYYY-MM-DD.log
+    subgraph Platform
+        EP[Educational Platform]
+    end
 
-    %% Submission 2
-    EducationalPlatform->>+CodeRunnerAPI: POST /run (code + inputs)
-    CodeRunnerAPI->>+MetricsStore: increment in_progress, total_executions
-    CodeRunnerAPI->>+DaggerContainer2: run all inputs for Submission 2
-    DaggerContainer2-->>-CodeRunnerAPI: { input: { output, error? }, ... }
-    CodeRunnerAPI->>+MetricsStore: update stats (duration, success/failure)
-    CodeRunnerAPI->>+LogFile: write to /logs/YYYY-MM-DD.log
+    subgraph Code Execution Backend
+        CR[CodeRunner API]
+        DAG[Dagger Engine]
+        C1[Dagger Container Python]
+        C2[Dagger Container Java]
+        C3[...]
+        METRICS[Metrics Store]
+        LOGS[Log File /logs/YYYY-MM-DD.log]
+    end
 
-    %% Polling results
-    EducationalPlatform->>+CodeRunnerAPI: GET /result/<exec_id>
-    CodeRunnerAPI-->>-EducationalPlatform: result JSON (output + execution_time)
-
-    %% Metrics retrieval
-    EducationalPlatform->>+CodeRunnerAPI: GET /metrics
-    CodeRunnerAPI-->>-EducationalPlatform: stats JSON
+    %% Communication Flows
+    UI --> EP
+    EP --> CR
+    CR --> DAG
+    DAG --> C1
+    DAG --> C2
+    DAG --> C3
+    CR --> METRICS
+    CR --> LOGS
