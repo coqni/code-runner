@@ -1,0 +1,31 @@
+sequenceDiagram
+    participant EducationalPlatform
+    participant CodeRunnerAPI
+    participant DaggerContainer1 as DaggerContainer (Submission 1)
+    participant DaggerContainer2 as DaggerContainer (Submission 2)
+    participant MetricsStore
+    participant LogFile
+
+    %% Submission 1
+    EducationalPlatform->>+CodeRunnerAPI: POST /run (code + inputs)
+    CodeRunnerAPI->>+MetricsStore: increment in_progress, total_executions
+    CodeRunnerAPI->>+DaggerContainer1: run all inputs for Submission 1
+    DaggerContainer1-->>-CodeRunnerAPI: { input: { output, error? }, ... }
+    CodeRunnerAPI->>+MetricsStore: update stats (duration, success/failure)
+    CodeRunnerAPI->>+LogFile: write to /logs/YYYY-MM-DD.log
+
+    %% Submission 2
+    EducationalPlatform->>+CodeRunnerAPI: POST /run (code + inputs)
+    CodeRunnerAPI->>+MetricsStore: increment in_progress, total_executions
+    CodeRunnerAPI->>+DaggerContainer2: run all inputs for Submission 2
+    DaggerContainer2-->>-CodeRunnerAPI: { input: { output, error? }, ... }
+    CodeRunnerAPI->>+MetricsStore: update stats (duration, success/failure)
+    CodeRunnerAPI->>+LogFile: write to /logs/YYYY-MM-DD.log
+
+    %% Polling results
+    EducationalPlatform->>+CodeRunnerAPI: GET /result/<exec_id>
+    CodeRunnerAPI-->>-EducationalPlatform: result JSON (output + execution_time)
+
+    %% Metrics retrieval
+    EducationalPlatform->>+CodeRunnerAPI: GET /metrics
+    CodeRunnerAPI-->>-EducationalPlatform: stats JSON
