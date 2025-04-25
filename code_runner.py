@@ -94,8 +94,9 @@ async def execute_code(code, inputs, exec_id):
     try:
         async with dagger.Connection() as client:
             # Language-specific helper file expected to call user code per input
-            helper_file = f"runner.{LANGUAGE if LANGUAGE != 'javascript' else 'js'}"
-            main_file = f"main.{LANGUAGE if LANGUAGE != 'javascript' else 'js'}"
+            # TODO: make variable per language
+            helper_file = f"runner.py"
+            main_file = f"main.py"
 main_content = code
 
 # Embed Python user code into a wrapper template for consistent function call
