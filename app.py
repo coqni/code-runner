@@ -9,9 +9,12 @@ import asyncio
 import time
 import json
 from threading import Lock
+from load_dotenv import load_dotenv
 from datetime import datetime
 from pathlib import Path
 from flasgger import Swagger
+
+load_dotenv()
 
 # Initialize Flask app and Swagger documentation
 app = Flask(__name__)
