@@ -100,19 +100,19 @@ async def execute_code(code, inputs, exec_id):
             # TODO: make variable per language
             helper_file = f"runner.py"
             main_file = f"main.py"
-main_content = code
+            main_content = code
 
-# Embed Python user code into a wrapper template for consistent function call
-if LANGUAGE == "python":
-    indented_code = "".join(f"    {line}" for line in code.splitlines())
-    main_content = f"def solve(input_str):
-{indented_code}
-"
+            # Embed Python user code into a wrapper template for consistent function call
+            if LANGUAGE == "python":
+                indented_code = "".join(f"    {line}" for line in code.splitlines())
+                main_content = f"""def solve(input_str):
+            {indented_code}
+            """
 
-src_dir = client.host().directory({
-    main_file: main_content,
-                helper_file: open(f"runners/{helper_file}").read(),
-                "inputs.json": json.dumps(inputs)
+            src_dir = client.host().directory({
+                main_file: main_content,
+                            helper_file: open(f"runners/{helper_file}").read(),
+                            "inputs.json": json.dumps(inputs)
             })
 
             container = (
@@ -197,28 +197,6 @@ def run_code():
     return jsonify({"exec_id": exec_id, "status": "started"})
 
 @app.route("/result/<exec_id>", methods=["GET"])
-'''
-JSON result format for /result/<exec_id>:
-{
-  "output": {
-    "<input1>": {"output": "<stdout result>", "error": "<optional error string>"},
-    "<input2>": {"output": "<stdout result>"},
-    ...
-  },
-  "execution_time": <duration in seconds>
-}
-
-Example:
-{
-  "output": {
-    "5": {"output": "25
-"},
-    "x": {"output": "", "error": "ValueError: invalid literal for int()..."}
-  },
-  "execution_time": 1.245
-}
-'''
-
 def get_result(exec_id):
     """
     Retrieves the output for a specific execution ID.

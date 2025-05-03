@@ -1,0 +1,5 @@
+flask
+dagger
+asyncio
+load_dotenv
+flasgger
