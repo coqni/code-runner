@@ -104,8 +104,7 @@ main_content = code
 
 # Embed Python user code into a wrapper template for consistent function call
 if LANGUAGE == "python":
-    indented_code = "
-".join(f"    {line}" for line in code.splitlines())
+    indented_code = "".join(f"    {line}" for line in code.splitlines())
     main_content = f"def solve(input_str):
 {indented_code}
 "
